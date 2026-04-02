@@ -3,7 +3,10 @@ using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using Artemis.Shared.Models;
 
 const string ip = "127.0.0.1";
 const int port = 5000;
@@ -21,10 +24,17 @@ try
     while (!cts.IsCancellationRequested)
     {
         int number = Random.Shared.Next(0, int.MaxValue);
-        string message = number.ToString(CultureInfo.InvariantCulture);
-        var data = Encoding.UTF8.GetBytes(message);
-        await client.SendAsync(data, data.Length, endpoint);
-        Console.WriteLine($"Sent: {message}");
+
+        Measurement measurement = new Measurement(number);
+
+        var jsonSerializerOptionsons = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        string jsonMeasurement = JsonSerializer.Serialize(measurement, jsonSerializerOptionsons);
+        var dataMeasurement = Encoding.UTF8.GetBytes(jsonMeasurement);
+
+        await client.SendAsync(dataMeasurement, dataMeasurement.Length, endpoint);
+
+        Console.WriteLine($"Sent JSON: {jsonMeasurement}");
+
         await Task.Delay(intervalMs, cts.Token);
     }
 }
