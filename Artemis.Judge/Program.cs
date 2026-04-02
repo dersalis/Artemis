@@ -1,6 +1,8 @@
 ﻿using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Json;
+using Artemis.Shared.Models;
 
 const int port = 5000;
 
@@ -28,20 +30,41 @@ try
         continue;
     }
 
-	string received = Encoding.UTF8.GetString(result.Buffer);
-	Console.WriteLine($"Received from {result.RemoteEndPoint}: {received}");
+        string received = Encoding.UTF8.GetString(result.Buffer);
+        Console.WriteLine($"Received from {result.RemoteEndPoint}: {received}");
 
-    if (int.TryParse(received, out int number))
-    {
-        count++;
-        sum += number;
-        min = Math.Min(min, number);
-        max = Math.Max(max, number);
-    }
-    else
-    {
-        Console.WriteLine($"Received invalid number: {received}");
-    }
+        int number;
+        var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        Measurement? measurement = null;
+        try
+        {
+            measurement = JsonSerializer.Deserialize<Measurement>(received, jsonOptions);
+        }
+        catch (JsonException)
+        {
+            // not JSON, will try plain int parse below
+        }
+
+        if (measurement is not null)
+        {
+            number = measurement.Value;
+            count++;
+            sum += number;
+            min = Math.Min(min, number);
+            max = Math.Max(max, number);
+            Console.WriteLine($"Parsed Measurement: Id={measurement.Id}, Date={measurement.Date:o}, Value={measurement.Value}");
+        }
+        else if (int.TryParse(received, out number))
+        {
+            count++;
+            sum += number;
+            min = Math.Min(min, number);
+            max = Math.Max(max, number);
+        }
+        else
+        {
+            Console.WriteLine($"Received invalid payload: {received}");
+        }
 }
 }
 catch (OperationCanceledException)
