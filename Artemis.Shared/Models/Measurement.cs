@@ -7,15 +7,19 @@ namespace Artemis.Shared.Models
 {
     public class Measurement
     {
-        public Measurement(int value)
+        public Measurement(int actorId, long sequence, long timestamp, int value)
         {
             Id = Guid.NewGuid();
-            Date = DateTime.UtcNow;
+            ActorId = actorId;
+            Sequence = sequence;
+            Timestamp = timestamp;
             Value = value;
         }
 
         public Guid Id { get; init; }
-        public DateTime Date { get; init; }
+        public int ActorId { get; set; }
+        public long Sequence { get; set; }
+        public long Timestamp { get; set; }
         public int Value { get; init; }
     }
 }

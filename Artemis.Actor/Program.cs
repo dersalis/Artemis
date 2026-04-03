@@ -1,16 +1,14 @@
-﻿using System;
-using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Artemis.Shared.Models;
 
 const string ip = "127.0.0.1";
 const int port = 5000;
-const int intervalMs = 5000;
+const int intervalMs = 5005;
+var actorId = 1; 
+long sequence = 0;
 
 using var cts = new CancellationTokenSource();
 Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
@@ -23,9 +21,13 @@ try
 {
     while (!cts.IsCancellationRequested)
     {
+        sequence++;
+
         int number = Random.Shared.Next(0, int.MaxValue);
 
-        Measurement measurement = new Measurement(number);
+        long timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+        Measurement measurement = new Measurement(actorId, sequence, timestamp, number);
 
         var jsonSerializerOptionsons = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         string jsonMeasurement = JsonSerializer.Serialize(measurement, jsonSerializerOptionsons);
