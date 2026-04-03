@@ -91,33 +91,33 @@ try
             currentVotes[measurement.ActorId] = measurement.Value;
 
             // Logika głosowania (czekamy na głosy od wszystkich AKTYWNYCH aktorów)
-            if (currentVotes.Count >= lastSeen.Count && lastSeen.Count > 0)
-            {
-                var v = currentVotes.Values.ToArray();
+            // if (currentVotes.Count >= lastSeen.Count && lastSeen.Count > 0)
+            // {
+            //     var v = currentVotes.Values.ToArray();
                 
-                if (v.Length >= 3) {
-                    // Głosowanie większościowe 2 z 3 (uproszczone)
-                    double finalDecision = 0;
-                    bool consensus = false;
+            //     if (v.Length >= 3) {
+            //         // Głosowanie większościowe 2 z 3 (uproszczone)
+            //         double finalDecision = 0;
+            //         bool consensus = false;
                     
-                    if (Math.Abs(v[0] - v[1]) < 0.5) { finalDecision = v[0]; consensus = true; }
-                    else if (Math.Abs(v[0] - v[2]) < 0.5) { finalDecision = v[0]; consensus = true; }
-                    else if (Math.Abs(v[1] - v[2]) < 0.5) { finalDecision = v[1]; consensus = true; }
+            //         if (Math.Abs(v[0] - v[1]) < 0.5) { finalDecision = v[0]; consensus = true; }
+            //         else if (Math.Abs(v[0] - v[2]) < 0.5) { finalDecision = v[0]; consensus = true; }
+            //         else if (Math.Abs(v[1] - v[2]) < 0.5) { finalDecision = v[1]; consensus = true; }
 
-                    if (consensus) Console.Write($"\r[OK] Decyzja: {finalDecision:F2} (Aktywnych: {lastSeen.Count})    ");
-                    else Console.Write("\r[ERR] Brak konsensusu między 3 jednostkami!          ");
-                } 
-                else if (v.Length == 2) {
-                    // Tryb awaryjny: dwóch aktorów
-                    if (Math.Abs(v[0] - v[1]) < 0.5) Console.Write($"\r[WARN] Tryb 2-jednostkowy. Decyzja: {v[0]:F2}    ");
-                    else Console.Write("\r[CRITICAL] Rozbieżność w trybie 2-jednostkowym!      ");
-                }
-                else {
-                    Console.Write($"\r[SINGLE] Ostatnia szansa (ID:{measurement.ActorId}): {measurement.Value:F2}               ");
-                }
+            //         if (consensus) Console.Write($"\r[OK] Decyzja: {finalDecision:F2} (Aktywnych: {lastSeen.Count})    ");
+            //         else Console.Write("\r[ERR] Brak konsensusu między 3 jednostkami!          ");
+            //     } 
+            //     else if (v.Length == 2) {
+            //         // Tryb awaryjny: dwóch aktorów
+            //         if (Math.Abs(v[0] - v[1]) < 0.5) Console.Write($"\r[WARN] Tryb 2-jednostkowy. Decyzja: {v[0]:F2}    ");
+            //         else Console.Write("\r[CRITICAL] Rozbieżność w trybie 2-jednostkowym!      ");
+            //     }
+            //     else {
+            //         Console.Write($"\r[SINGLE] Ostatnia szansa (ID:{measurement.ActorId}): {measurement.Value:F2}               ");
+            //     }
 
-                currentVotes.Clear();
-            }
+            //     currentVotes.Clear();
+            // }
         }
         catch (JsonException)
         {
